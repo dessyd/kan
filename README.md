@@ -61,7 +61,9 @@ Alternatively, you can self-host Kan with Docker Compose. This will set up every
 
 1. Create a `.env` file with your environment variables (see [Environment Variables](#environment-variables-) section below)
 
-2. Use the provided `docker-compose.yml` file or create your own with the following configuration:
+   Since this file holds real secrets, restrict its permissions to the owner only: `chmod 600 .env`
+
+2. Use the provided `compose-example.yml` file or create your own with the following configuration:
 
 ```yaml
 services:
@@ -139,7 +141,7 @@ The `migrate` service will automatically run database migrations before the web 
 - To restart the containers: `docker compose restart`
 - To rebuild after code changes: `docker compose up -d --build`
 
-For the complete Docker Compose configuration with all optional features, see [docker-compose.yml](./docker-compose.yml) in the repository.
+For the complete Docker Compose configuration with all optional features, see [compose-example.yml](./compose-example.yml) in the repository.
 
 ## Local Development 🧑‍💻
 

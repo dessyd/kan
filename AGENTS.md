@@ -233,7 +233,7 @@ Update all of the following:
 
 1. `.env.example` — add the variable with an empty value and a comment explaining it
 2. `turbo.json` — add to `globalEnv` (or `globalPassThroughEnv` for CI/platform vars)
-3. `docker-compose.yml` — add to the `web` service `environment` section
+3. `compose-example.yml` — add to the `web` service `environment` section
 4. `cloud/docker-compose.yml` — add to the `web` service `environment` section
 5. `README.md` — add a row to the Environment Variables table
 
