@@ -53,6 +53,7 @@ dist/
 
 # docker
 docker-compose.override.yml
+compose.yml
 
 # runtime env
 __ENV.js
