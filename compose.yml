@@ -35,8 +35,6 @@ services:
   postgres:
     image: postgres:15
     container_name: kan-db
-    env_file:
-      - .env.config
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-kan_db}
       POSTGRES_USER: ${POSTGRES_USER:-kan}
