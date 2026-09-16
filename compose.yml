@@ -1,0 +1,61 @@
+services:
+  migrate:
+    image: ghcr.io/kanbn/kan-migrate:latest
+    container_name: kan-migrate
+    networks:
+      - kan-network
+    env_file:
+      - .env.config
+    environment:
+      POSTGRES_URL: ${POSTGRES_URL:-postgresql://${POSTGRES_USER:-kan}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-kan_db}}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: "no"
+
+  web:
+    image: kan-web:local
+    container_name: kan-web
+    ports:
+      - "3000:3000"
+    networks:
+      - kan-network
+    extra_hosts:
+      - "gurga.synology.me:${GURGA_LAN_IP}"
+    env_file:
+      - .env.config
+    environment:
+      NEXT_PUBLIC_BASE_URL: ${NEXT_PUBLIC_BASE_URL:-http://localhost:3000}
+      BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET}
+      POSTGRES_URL: ${POSTGRES_URL:-postgresql://${POSTGRES_USER:-kan}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-kan_db}}
+      NEXT_PUBLIC_ALLOW_CREDENTIALS: ${NEXT_PUBLIC_ALLOW_CREDENTIALS:-true}
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:15
+    container_name: kan-db
+    env_file:
+      - .env.config
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-kan_db}
+      POSTGRES_USER: ${POSTGRES_USER:-kan}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - kan_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-kan} -d ${POSTGRES_DB:-kan_db}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+    networks:
+      - kan-network
+
+networks:
+  kan-network:
+
+volumes:
+  kan_postgres_data:

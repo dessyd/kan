@@ -24,6 +24,14 @@ interface Attachment {
   size?: number | null;
 }
 
+// Presigned S3 URLs point directly at the storage endpoint, which may not be
+// reachable from every client's network (e.g. a self-hosted MinIO on a LAN).
+// Route previews through the same server-side proxy the download button
+// already uses, so only the Next.js server needs connectivity to storage.
+function getPreviewUrl(url: string): string {
+  return `/api/download/attatchment?url=${encodeURIComponent(url)}`;
+}
+
 export function AttachmentThumbnails({
   attachments,
   cardPublicId,
@@ -336,7 +344,7 @@ export function AttachmentThumbnails({
                     <div className="relative">
                       <div className="relative mx-auto max-h-[90vh] w-full">
                         <Image
-                          src={selectedAttachment.url}
+                          src={getPreviewUrl(selectedAttachment.url)}
                           alt={
                             selectedAttachment.originalFilename ?? "Attachment"
                           }
@@ -387,11 +395,12 @@ function AttachmentThumbnail({
     >
       {isImage ? (
         <Image
-          src={attachment.url}
+          src={getPreviewUrl(attachment.url)}
           alt={attachment.originalFilename}
           fill
           className="object-cover"
           sizes="64px"
+          unoptimized
         />
       ) : (
         <div className="flex h-full w-full items-center justify-center bg-light-100 dark:bg-dark-100">
